@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <omp.h>
 
 double pegaTempo(void)
 {
@@ -85,6 +86,22 @@ void serial(unsigned char *imagem, int largura, int altura, int max_iteracoes)
     }
 }
 
+void openmp(unsigned char *imagem, int largura, int altura, int max_iteracoes, int num_threads)
+{
+    // define o numero de threads
+    omp_set_num_threads(num_threads);
+
+    // paraleliza as linhas da imagem com balanceamento dinamico de carga
+    #pragma omp parallel for schedule(dynamic)
+    for (int y = 0; y < altura; y++)
+    {
+        for (int x = 0; x < largura; x++)
+        {
+            imagem[y * largura + x] = calcular_pixel(x, y, largura, altura, max_iteracoes);
+        }
+    }
+}
+
 
 int main (int argc, char *argv[])
 {
@@ -125,12 +142,21 @@ int main (int argc, char *argv[])
     double tempo_pth1   = 0.0;
     double tempo_pth2   = 0.0;
 
+    // Medição Serial
     double inicio = pegaTempo();
     serial(imagem, largura, altura, max_iteracoes);
     double fim = pegaTempo();
     tempo_serial = fim - inicio;
+    //
 
-    if(!salvar_imagem("mandelbrot_teste_serial.pgm", imagem, largura, altura))
+    // Medição OpenMP
+    inicio = pegaTempo();
+    openmp(imagem, largura, altura, max_iteracoes, num_threads);
+    fim = pegaTempo();
+    tempo_openmp = fim - inicio;
+    //
+
+    if(!salvarImagem("mandelbrot_teste_serial.pgm", imagem, largura, altura))
     {
         free(imagem);
         return 1;
