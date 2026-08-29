@@ -1,8 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
+double pegaTempo(void)
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
+}
 
-int salvar_imagem(const char *nome_arquivo, unsigned char *imagem, int largura, int altura)
+int salvaTempo(const char *nome_arquivo, double t_serial, double t_openmp, double t_pth1, double t_pth2)
+{
+    FILE *arquivo = fopen(nome_arquivo, "w");
+    if (arquivo == NULL)
+    {
+        fprintf(stderr, "erro: nao foi possivel criar o arquivo %s\n", nome_arquivo);
+        return 0;
+    }
+
+    fprintf(arquivo, "Serial: %.6f s\n", t_serial);
+    fprintf(arquivo, "OpenMP: %.6f s\n", t_openmp);
+    fprintf(arquivo, "Pthreads 1: %.6f s\n", t_pth1);
+    fprintf(arquivo, "Pthreads 2: %.6f s\n", t_pth2);
+
+    fclose(arquivo);
+    return 1;
+}
+
+int salvarImagem(const char *nome_arquivo, unsigned char *imagem, int largura, int altura)
 {
     FILE *arquivo = fopen(nome_arquivo, "w");
     if (arquivo == NULL)
@@ -28,7 +53,7 @@ int salvar_imagem(const char *nome_arquivo, unsigned char *imagem, int largura, 
     return 1;
 }
 
-unsigned char calcular_pixel (int x, int y, int altura, int largura, int max_iteracoes)
+unsigned char calcular_pixel (int x, int y, int largura, int altura, int max_iteracoes)
 {
     /* converte pixel p/ plano complexo */
     double cr = -2.0 + ((double)x / largura) * 3.0;
@@ -91,9 +116,19 @@ int main (int argc, char *argv[])
     if (imagem == NULL)
     {
         fprintf(stderr, "erro: falha ao alocar memoria para imagem");
+        return 1;
     }
 
+    /* variaveis de tempo */
+    double tempo_serial = 0.0;
+    double tempo_openmp = 0.0;
+    double tempo_pth1   = 0.0;
+    double tempo_pth2   = 0.0;
+
+    double inicio = pegaTempo();
     serial(imagem, largura, altura, max_iteracoes);
+    double fim = pegaTempo();
+    tempo_serial = fim - inicio;
 
     if(!salvar_imagem("mandelbrot_teste_serial.pgm", imagem, largura, altura))
     {
