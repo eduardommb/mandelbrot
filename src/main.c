@@ -4,16 +4,9 @@
 #include <omp.h>
 #include <pthread.h>
 
-typedef struct
-{
-    unsigned char *imagem;
-    int largura;
-    int altura;
-    int max_iteracoes;
-    int y_inicio;
-    int y_fim;
-} ThreadBlock;
-
+// ==================
+// CALCULO DO PIXEL
+// ==================
 unsigned char calcular_pixel (int x, int y, int largura, int altura, int max_iteracoes)
 {
     /* converte pixel p/ plano complexo */
@@ -35,7 +28,9 @@ unsigned char calcular_pixel (int x, int y, int largura, int altura, int max_ite
     return (unsigned char)(((double)iter / max_iteracoes) * 255.0);
 }
 
-// TEMPO E ARQUIVO
+// ==================
+// TEMPO E ARQUIVOS
+// ==================
 double pegaTempo(void)
 {
     struct timespec ts;
@@ -87,7 +82,10 @@ int salvarImagem(const char *nome_arquivo, unsigned char *imagem, int largura, i
     return 1;
 }
 
+// ==================
 // SERIAL
+// ==================
+//
 void serial(unsigned char *imagem, int largura, int altura, int max_iteracoes)
 {
     for (int y = 0; y < altura; y++)
@@ -99,7 +97,9 @@ void serial(unsigned char *imagem, int largura, int altura, int max_iteracoes)
     }
 }
 
+// ==================
 // OPENMP
+// ==================
 void openmp(unsigned char *imagem, int largura, int altura, int max_iteracoes, int num_threads)
 {
     // define o numero de threads
@@ -116,13 +116,28 @@ void openmp(unsigned char *imagem, int largura, int altura, int max_iteracoes, i
     }
 }
 
-// PTHREADS 1
+// ==================
+// PTHREADS 1 (BLOCOS)
+// ==================
 
-void *worker_pthreads1(void *arg) {
+typedef struct
+{
+    unsigned char *imagem;
+    int largura;
+    int altura;
+    int max_iteracoes;
+    int y_inicio;
+    int y_fim;
+} ThreadBlock;
+
+void *worker_pthreads1(void *arg)
+{
     ThreadBlock *dados = (ThreadBlock *)arg;
 
-    for (int y = dados->y_inicio; y < dados->y_fim; y++) {
-        for (int x = 0; x < dados->largura; x++) {
+    for (int y = dados->y_inicio; y < dados->y_fim; y++)
+    {
+        for (int x = 0; x < dados->largura; x++)
+        {
             dados->imagem[y * dados->largura + x] = calcular_pixel(x, y, dados->largura, dados->altura, dados->max_iteracoes);
         }
     }
@@ -179,66 +194,63 @@ int pthreads1(unsigned char *imagem, int largura, int altura, int max_iteracoes,
 }
 
 
-
-// === MAIN === //
+// ==================
+// MAIN
+// ==================
 
 int main (int argc, char *argv[])
 {
-    /* verifica qtd de parametros */
     if (argc != 5)
     {
         fprintf(stderr, "erro: use ./mandelbrot <largura> <altura> <max_iteracoes> <num_threads>\n");
         return 1;
     }
 
-    /* converte p/ inteiro */
     int largura = atoi(argv[1]);
     int altura = atoi(argv[2]);
     int max_iteracoes = atoi(argv[3]);
     int num_threads = atoi(argv[4]);
 
-    /* nenhum num. negativo ou igual a zero */
     if (largura <= 0 || altura <= 0 || max_iteracoes <= 0 || num_threads <= 0)
     {
         fprintf(stderr, "erro: todos os valores devem ser maiores que zero.\n");
         return 1;
     }
 
-    /* alocacao da matriz de pixels */
     size_t total_pixels = (size_t)largura * altura;
     unsigned char *imagem = (unsigned char *)malloc(total_pixels * sizeof(unsigned char));
 
-    /* tratamento de erro na alocacao */
     if (imagem == NULL)
     {
         fprintf(stderr, "erro: falha ao alocar memoria para imagem");
         return 1;
     }
 
-    /* variaveis de tempo */
+    char nome_arquivo[128];
     double tempo_serial = 0.0;
     double tempo_openmp = 0.0;
     double tempo_pth1   = 0.0;
     double tempo_pth2   = 0.0;
 
+    // ==================
+    // SERIAL/OPENMP/PTHREADS_1/PTHREADS_2
+    // ==================
 
-    // SERIAL/OPENMP/PTHREADS_1/PTHREADS_2 //
-
-    // Medição Serial //
+    // Serial
     double inicio = pegaTempo();
     serial(imagem, largura, altura, max_iteracoes);
     double fim = pegaTempo();
     tempo_serial = fim - inicio;
 
 
-    // Medição OpenMP //
+    // OpenMP //
     inicio = pegaTempo();
     openmp(imagem, largura, altura, max_iteracoes, num_threads);
     fim = pegaTempo();
     tempo_openmp = fim - inicio;
 
 
-    // Medição Pthreads 1 //
+    // Pthreads 1 //
     inicio = pegaTempo();
     if (!pthreads1(imagem, largura, altura, max_iteracoes, num_threads))
     {
