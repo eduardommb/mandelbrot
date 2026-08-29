@@ -44,7 +44,7 @@ int salvarImagem(const char *nome_arquivo, unsigned char *imagem, int largura, i
             {
                 fprintf(arquivo, " ");
             }
-            fprintf(arquivo, "%u", imagem[y * altura + x]);
+            fprintf(arquivo, "%u", imagem[y * largura + x]);
         }
         fprintf(arquivo, "\n");
     }
