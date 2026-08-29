@@ -1,6 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+int salvar_imagem(const char *nome_arquivo, unsigned char *imagem, int largura, int altura)
+{
+    FILE *arquivo = fopen(nome_arquivo, "w");
+    if (arquivo == NULL)
+    {
+        fprintf(stderr, "erro: nao foi possivel criar o arquivo %s", nome_arquivo);
+        return 0;
+    }
+
+    for (int y = 0; y < altura; y++)
+    {
+        for (int x = 0; x < largura; x++)
+        {
+            if (x > 0)
+            {
+                fprintf(arquivo, " ");
+            }
+            fprintf(arquivo, "%u", imagem[y * altura + x]);
+        }
+        fprintf(arquivo, "\n");
+    }
+
+    fclose(arquivo);
+    return 1;
+}
+
 unsigned char calcular_pixel (int x, int y, int altura, int largura, int max_iteracoes)
 {
     /* converte pixel p/ plano complexo */
@@ -66,7 +93,14 @@ int main (int argc, char *argv[])
         fprintf(stderr, "erro: falha ao alocar memoria para imagem");
     }
 
-    free(imagem);
+    serial(imagem, largura, altura, max_iteracoes);
+
+    if(!salvar_imagem("mandelbrot_teste_serial.pgm", imagem, largura, altura))
+    {
+        free(imagem);
+        return 1;
+    }
+
 
     return 0;
 }
