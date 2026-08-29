@@ -23,5 +23,17 @@ int main (int argc, char *argv[])
         return 1;
     }
 
+    /* alocacao da matriz de pixels */
+    size_t total_pixels = (size_t)largura * altura;
+    unsigned char *imagem = (unsigned char *)malloc(total_pixels * sizeof(unsigned char));
+
+    /* tratamento de erro na alocacao */
+    if (imagem == NULL)
+    {
+        fprintf(stderr, "erro: falha ao alocar memoria para imagem");
+    }
+
+    free(imagem);
+
     return 0;
 }
