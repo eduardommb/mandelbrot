@@ -4,6 +4,11 @@
 #include <omp.h>
 #include <pthread.h>
 
+
+
+
+
+
 // ==================
 // CALCULO DO PIXEL
 // ==================
@@ -27,6 +32,11 @@ unsigned char calcular_pixel (int x, int y, int largura, int altura, int max_ite
 
     return (unsigned char)(((double)iter / max_iteracoes) * 255.0);
 }
+
+
+
+
+
 
 // ==================
 // TEMPO E ARQUIVOS
@@ -82,6 +92,11 @@ int salvarImagem(const char *nome_arquivo, unsigned char *imagem, int largura, i
     return 1;
 }
 
+
+
+
+
+
 // ==================
 // SERIAL
 // ==================
@@ -96,6 +111,11 @@ void serial(unsigned char *imagem, int largura, int altura, int max_iteracoes)
         }
     }
 }
+
+
+
+
+
 
 // ==================
 // OPENMP
@@ -115,6 +135,11 @@ void openmp(unsigned char *imagem, int largura, int altura, int max_iteracoes, i
         }
     }
 }
+
+
+
+
+
 
 // ==================
 // PTHREADS 1 (BLOCOS)
@@ -144,6 +169,11 @@ void *worker_pthreads1(void *arg)
 
     pthread_exit(NULL);
 }
+
+
+
+
+
 
 int pthreads1(unsigned char *imagem, int largura, int altura, int max_iteracoes, int num_threads)
 {
@@ -193,6 +223,11 @@ int pthreads1(unsigned char *imagem, int largura, int altura, int max_iteracoes,
     return 1;
 }
 
+
+
+
+
+
 // ==================
 // PTHREADS 2 (INTERCALADA)
 // ==================
@@ -216,6 +251,10 @@ void *worker_pthreads2(void *arg) {
 
     pthread_exit(NULL);
 }
+
+
+
+
 
 
 // ==================
