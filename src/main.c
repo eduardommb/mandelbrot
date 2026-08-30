@@ -192,6 +192,7 @@ int pthreads1(unsigned char *imagem, int largura, int altura, int max_iteracoes,
     free(args);
     return 1;
 }
+
 // ==================
 // PTHREADS 2 (INTERCALADA)
 // ==================
@@ -202,7 +203,19 @@ typedef struct {
     int max_iteracoes;
     int thread_id;
     int num_threads;
-} ThreadCiclica;
+} ThreadIntercalada;
+
+void *worker_pthreads2(void *arg) {
+    ThreadIntercalada *dados = (ThreadIntercalada *)arg;
+
+    for (int y = dados->thread_id; y < dados->altura; y += dados->num_threads) {
+        for (int x = 0; x < dados->largura; x++) {
+            dados->imagem[y * dados->largura + x] = calcular_pixel(x, y, dados->largura, dados->altura, dados->max_iteracoes);
+        }
+    }
+
+    pthread_exit(NULL);
+}
 
 
 // ==================
