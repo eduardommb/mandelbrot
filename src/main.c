@@ -401,5 +401,14 @@ int main (int argc, char *argv[])
         return 1;
     }
 
+    // 5. Salva Tempo
+    if (!salvaTempo("times.txt", tempo_serial, tempo_openmp, tempo_pth1, tempo_pth2))
+    {
+        free(imagem);
+        return 1;
+    }
+
+    free(imagem);
+
     return 0;
 }
