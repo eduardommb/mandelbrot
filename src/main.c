@@ -192,6 +192,17 @@ int pthreads1(unsigned char *imagem, int largura, int altura, int max_iteracoes,
     free(args);
     return 1;
 }
+// ==================
+// PTHREADS 2 (INTERCALADA)
+// ==================
+typedef struct {
+    unsigned char *imagem;
+    int largura;
+    int altura;
+    int max_iteracoes;
+    int thread_id;
+    int num_threads;
+} ThreadCiclica;
 
 
 // ==================
@@ -236,7 +247,7 @@ int main (int argc, char *argv[])
     // SERIAL/OPENMP/PTHREADS_1/PTHREADS_2
     // ==================
 
-    // Serial
+    // Serial //
     double inicio = pegaTempo();
     serial(imagem, largura, altura, max_iteracoes);
     double fim = pegaTempo();
