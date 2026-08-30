@@ -302,7 +302,7 @@ int main (int argc, char *argv[])
 {
     if (argc != 5)
     {
-        fprintf(stderr, "erro: use ./mandelbrot <largura> <altura> <max_iteracoes> <num_threads>\n");
+        fprintf(stderr, "Erro: use ./mandelbrot <largura> <altura> <max_iteracoes> <num_threads>\n");
         return 1;
     }
 
@@ -313,7 +313,7 @@ int main (int argc, char *argv[])
 
     if (largura <= 0 || altura <= 0 || max_iteracoes <= 0 || num_threads <= 0)
     {
-        fprintf(stderr, "erro: todos os valores devem ser maiores que zero.\n");
+        fprintf(stderr, "Erro: todos os valores devem ser maiores que zero.\n");
         return 1;
     }
 
@@ -322,11 +322,10 @@ int main (int argc, char *argv[])
 
     if (imagem == NULL)
     {
-        fprintf(stderr, "erro: falha ao alocar memoria para imagem");
+        fprintf(stderr, "Erro: falha ao alocar memoria para imagem");
         return 1;
     }
 
-    char nome_arquivo[128];
     double tempo_serial = 0.0;
     double tempo_openmp = 0.0;
     double tempo_pth1   = 0.0;
