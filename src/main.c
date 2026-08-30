@@ -252,6 +252,43 @@ void *worker_pthreads2(void *arg) {
     pthread_exit(NULL);
 }
 
+int pthreads2(unsigned char *imagem, int largura, int altura, int max_iteracoes, int num_threads) {
+
+    pthread_t *threads = (pthread_t *)malloc(num_threads * sizeof(pthread_t));
+    ThreadIntercalada *args = (ThreadIntercalada *)malloc(num_threads * sizeof(ThreadIntercalada));
+
+    if (threads == NULL || args == NULL) {
+        fprintf(stderr, "Erro: Falha na alocacao de memoria para Pthreads 2.\n");
+        free(threads);
+        free(args);
+        return 0;
+    }
+
+    for (int i = 0; i < num_threads; i++) {
+        args[i].imagem = imagem;
+        args[i].largura = largura;
+        args[i].altura = altura;
+        args[i].max_iteracoes = max_iteracoes;
+        args[i].thread_id = i;
+        args[i].num_threads = num_threads;
+
+        if (pthread_create(&threads[i], NULL, worker_pthreads2, (void *)&args[i]) != 0) {
+            fprintf(stderr, "Erro: Falha ao criar a thread %d no Pthreads 2.\n", i);
+            free(threads);
+            free(args);
+            return 0;
+        }
+    }
+
+    for (int i = 0; i < num_threads; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    free(threads);
+    free(args);
+    return 1;
+}
+
 
 
 
@@ -295,9 +332,14 @@ int main (int argc, char *argv[])
     double tempo_pth1   = 0.0;
     double tempo_pth2   = 0.0;
 
+
+
+
     // ==================
     // SERIAL/OPENMP/PTHREADS_1/PTHREADS_2
     // ==================
+
+
 
     // Serial //
     double inicio = pegaTempo();
@@ -305,12 +347,26 @@ int main (int argc, char *argv[])
     double fim = pegaTempo();
     tempo_serial = fim - inicio;
 
+    if (!salvarImagem("mandelbrot_lemb_serial.pgm", imagem, largura, altura))
+    {
+        free(imagem);
+        return 1;
+    }
+
+
 
     // OpenMP //
     inicio = pegaTempo();
     openmp(imagem, largura, altura, max_iteracoes, num_threads);
     fim = pegaTempo();
     tempo_openmp = fim - inicio;
+
+    if (!salvarImagem("mandelbrot_lemb_openmp.pgm", imagem, largura, altura))
+    {
+        free(imagem);
+        return 1;
+    }
+
 
 
     // Pthreads 1 //
@@ -323,13 +379,28 @@ int main (int argc, char *argv[])
     fim = pegaTempo();
     tempo_pth1 = fim - inicio;
 
-
-    if(!salvarImagem("mandelbrot_teste_serial.pgm", imagem, largura, altura))
+    if(!salvarImagem("mandelbrot_lemb_pthreads1.pgm", imagem, largura, altura))
     {
         free(imagem);
         return 1;
     }
 
+
+
+    // 4. Pthreads 2
+    inicio = pegaTempo();
+    if (!pthreads2(imagem, largura, altura, max_iteracoes, num_threads)) {
+        free(imagem);
+        return 1;
+    }
+    fim = pegaTempo();
+    tempo_pth2 = fim - inicio;
+
+    if (!salvarImagem("mandelbrot_lemb_pthreads2.pgm", imagem, largura, altura))
+    {
+        free(imagem);
+        return 1;
+    }
 
     return 0;
 }
