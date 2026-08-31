@@ -41,7 +41,7 @@ Parâmetros:
 ## Arquivos gerados
 
 ```text
-mandelbrot_lemb_serial.pgm    imagem gerada pela versão sequencial
+mandelbrot_lemb_serial.pgm    imagem gerada pela versão serial
 mandelbrot_lemb_openmp.pgm    imagem gerada pela versão OpenMP
 mandelbrot_lemb_pthreads1.pgm imagem gerada com Pthreads (divisão por blocos)
 mandelbrot_lemb_pthreads2.pgm imagem gerada com Pthreads (divisão intercalada)
