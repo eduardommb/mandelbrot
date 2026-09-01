@@ -8,10 +8,6 @@
 
 
 
-
-// ==================
-// CALCULO DO PIXEL
-// ==================
 unsigned char calcular_pixel (int x, int y, int largura, int altura, int max_iteracoes)
 {
     /* converte pixel p/ plano complexo */
@@ -37,10 +33,6 @@ unsigned char calcular_pixel (int x, int y, int largura, int altura, int max_ite
 
 
 
-
-// ==================
-// TEMPO E ARQUIVOS
-// ==================
 double pegaTempo(void)
 {
     struct timespec ts;
@@ -96,11 +88,6 @@ int salvarImagem(const char *nome_arquivo, unsigned char *imagem, int largura, i
 
 
 
-
-// ==================
-// SERIAL
-// ==================
-//
 void serial(unsigned char *imagem, int largura, int altura, int max_iteracoes)
 {
     for (int y = 0; y < altura; y++)
@@ -116,10 +103,6 @@ void serial(unsigned char *imagem, int largura, int altura, int max_iteracoes)
 
 
 
-
-// ==================
-// OPENMP
-// ==================
 void openmp(unsigned char *imagem, int largura, int altura, int max_iteracoes, int num_threads)
 {
     // define o numero de threads
@@ -139,11 +122,6 @@ void openmp(unsigned char *imagem, int largura, int altura, int max_iteracoes, i
 
 
 
-
-
-// ==================
-// PTHREADS 1 (BLOCOS)
-// ==================
 
 typedef struct
 {
@@ -227,10 +205,6 @@ int pthreads1(unsigned char *imagem, int largura, int altura, int max_iteracoes,
 
 
 
-
-// ==================
-// PTHREADS 2 (INTERCALADA)
-// ==================
 typedef struct {
     unsigned char *imagem;
     int largura;
@@ -293,11 +267,6 @@ int pthreads2(unsigned char *imagem, int largura, int altura, int max_iteracoes,
 
 
 
-
-// ==================
-// MAIN
-// ==================
-
 int main (int argc, char *argv[])
 {
     if (argc != 5)
@@ -331,12 +300,6 @@ int main (int argc, char *argv[])
     double tempo_pth1   = 0.0;
     double tempo_pth2   = 0.0;
 
-
-
-
-    // ==================
-    // SERIAL/OPENMP/PTHREADS_1/PTHREADS_2
-    // ==================
 
 
 
@@ -400,6 +363,8 @@ int main (int argc, char *argv[])
         free(imagem);
         return 1;
     }
+
+
 
     // 5. Salva Tempo
     if (!salvaTempo("times.txt", tempo_serial, tempo_openmp, tempo_pth1, tempo_pth2))
